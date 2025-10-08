@@ -1,0 +1,70 @@
+{
+  "name": "LLM Scratch with ROCm",
+  "image": "rocm/pytorch:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "username": "vscode",
+      "userUid": "automatic",
+      "userGid": "automatic"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "charliermarsh.ruff",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/conda/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "jupyter.jupyterServerType": "local"
+      }
+    }
+  },
+  "containerEnv": {
+    "PYTHONPATH": "/workspaces/llm-scratch",
+    "HIP_VISIBLE_DEVICES": "0"
+  },
+  "runArgs": [
+    "--device=/dev/kfd",
+    "--device=/dev/dri",
+    "--security-opt=seccomp=unconfined",
+    "--group-add=video",
+    "--ipc=host",
+    "--cap-add=SYS_PTRACE"
+  ],
+  "postCreateCommand": "pip install --upgrade pip && pip install tiktoken matplotlib tqdm",
+  "forwardPorts": [8888, 6006],
+  "portsAttributes": {
+    "8888": {
+      "label": "Jupyter",
+      "onAutoForward": "notify"
+    },
+    "6006": {
+      "label": "TensorBoard",
+      "onAutoForward": "notify"
+    }
+  },
+  "workspaceFolder": "/workspaces/llm-scratch",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/llm-scratch,type=bind",
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+  ],
+  "remoteUser": "vscode"
+}
